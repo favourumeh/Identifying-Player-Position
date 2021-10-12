@@ -8,11 +8,10 @@ Created on Mon Oct 11 17:25:38 2021
 import pandas as pd 
 
 from copy import deepcopy
-from statistics import pstdev, mean 
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split 
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, log_loss
+from sklearn.model_selection import cross_val_score, cross_validate
 
 
 import matplotlib.pyplot as plt
@@ -118,148 +117,158 @@ print(classification_report(y_train, y_pred)) #training data
 
 print(classification_report(y_test, y_pred_test)) # testing data
 
-        # Cross validation
-from sklearn.model_selection import cross_val_score
+########################## ignore this section ################################
 
-a = pd.read_csv('X_train_unscaled.csv')
-b = pd.read_csv('X_test_unscaled.csv')
+        # Cross validation
+
+a = pd.read_csv('X_train_unscaled.csv')[X_train1.columns]
+b = pd.read_csv('X_test_unscaled.csv')[X_train1.columns]
 
 df_90 = pd.concat([a,b], axis =0)
 
 X_s = min_max_scaler(df_90)
+
 y = pd.concat([y_train, y_test], axis =0)
 
 
-log_reg1 = LogisticRegression(penalty = 'none', random_state=0, solver = 'lbfgs', max_iter=10000)
+log_reg1 = LogisticRegression(penalty = 'none', random_state=0, solver = 'lbfgs', max_iter=5000)
 Accuracy_scores = cross_val_score(log_reg1, X_s, y.values.flatten(), cv = 5, scoring = 'accuracy') # [0.69377163, 0.70025952, 0.70272609, 0.69190826, 0.70488966]
-mean_Accuracy_score = Accuracy_scores.mean() # 0.699 slighly higher than accuracy of test set 0.6559 
+mean_Accuracy_score = Accuracy_scores.mean() # 0.683 slighly higher than accuracy of test set 0.6559 
 print(Accuracy_scores)
-
+###############################################################################
     
 
 
 # Tunning Model 
+    # 1A) Using gridsearch cross validation on training set
+from sklearn.model_selection import GridSearchCV
 
-    #1) Removing Noise: Adjusting independent variables
+log_reg2 = LogisticRegression()
 
-def relative_std(L1):
-    #This calculates the relative standard deviation for numbers in list L1
-    #(i.e. the average spread of data relative to the mean )
-    rel_std = (sum([((i-mean(L1))/mean(L1))**2 for i in L1])/len(L1))**0.5
-    return rel_std
+param_grid = {'max_iter' : [5000],
+              'penalty' : ['l1', 'l2'],
+              'C' : np.logspace(-4, 4, 20),
+              'solver' : ['newton-cg', 'lbfgs', 'sag', 'saga']}
+   
+clf_log_reg = GridSearchCV(log_reg2, param_grid = param_grid, cv = 5, verbose=True, n_jobs = -1)
+best_clf_log_reg = clf_log_reg.fit(X_train, y_train)
+best_clf_log_reg.best_score_ # mean accuracy 0.691
+best_clf_log_reg.best_params_ #{'C': 206.913808111479, 'max_iter': 5000, 'penalty': 'l2', 'solver': 'sag'}
 
-        #Generating a dataframe of the relative stadard diviation of the mean variable values 
-        #for each outcome(PF, C, ...) for a given variable (see ''st_dev'' if confused)
+        # Evaluating parameters derved from Gridsearch on test set
 
-st_dev = pd.DataFrame(columns = ['Variable', 'Relative Standard deviation', 'Categoric Mean(PF, C, SG, SF, PG)'])
+log_reg3 = LogisticRegression(max_iter = 5000, penalty = 'l2', C =206.91381, solver = 'sag')
 
-for i in df_n4:
+log_reg3.fit(X_train, y_train.values.flatten())
+
+y_pred = log_reg3.predict(X_train)
+y_pred_test = log_reg3.predict(X_test)
+
+ac_train = accuracy_score(y_pred, y_train) # 0.6926 accuracy
+ac = accuracy_score(y_pred_test, y_test) # 0.6555 accuracy (slighly worse than before 0.6559 )
+
+
+    #2A) Adjusting C to the one that maximises the accuracy of the test data
+
+#(Result: best is C = 29.764 for mean accuracy (0.6571) and log_loss (0.8679))
+
+C_list = np.logspace(-4, 4, 20)
+
+acc_list = []
+log_loss_list = []
+acc_CV_list=[]
+for C in C_list:
     
-    if i not in ('Pos'):  
-        mean_stat_list  =[]
-        for position in ['PF', 'C', 'SG', 'SF', 'PG']:
-                index = df_n4.loc[:, i][df_n4.Pos == position ].index
-                mean_stat = df_n4.loc[index, i].mean()
-                #print(f'For position {position} the mean {i} =  {mean_stat:.3f}')
-                
-                mean_stat_list.append(mean_stat)
-      
-
-        st_dev = st_dev.append({'Variable': i, 'Relative Standard deviation': f'{relative_std(mean_stat_list):.3f}', 'Categoric Mean(PF, C, SG, SF, PG)': f'{[round(i, 3) for i in mean_stat_list]}'}, ignore_index = True) 
-
-
-
-
+    log_reg4 = LogisticRegression(max_iter = 5000, penalty = 'l2', C =C, solver = 'sag')
+    log_reg4.fit(X_train, y_train.values.flatten())
     
-            # Data visualiser: looking at the spread 
-for column in df_n4:
-    if column != 'Pos':
-        plt.figure()
-        for position in df.Pos.unique(): #['PF', 'C', 'SG', 'SF', 'PG']   
-            mu = df_n4[column][df_n4.Pos == position].mean() 
-            sigma = df_n4[column][df_n4.Pos == position].std()
-            
-            x = np.linspace(mu - 4*sigma, mu + 4*sigma, 100)
-            plt.plot(x, stats.norm.pdf(x, mu, sigma), label = f'{position}')
-            
-            # g = df_n4[column][df.Pos == position].hist(label= position)
-            # #g = sns.kdeplot(data=df_n4[column][df.Pos == position],label= position)
-            # plt.title(f'{column}')
-            
-            plt.title(f'The equivalent gaussian (normal) distribution of {column} across different player position ')
-            plt.legend()
-            plt.xlabel(f'{column}')
-            plt.ylabel('Probability(pdf)')
-            
+    acc_score = log_reg4.score(X_test, y_test)
+    acc_list.append(acc_score)
+     
+    ll = log_loss(y_test.values.flatten(), log_reg4.predict_proba(X_test))
+    log_loss_list.append(ll)
 
-            # Dropping variables
-best_variables = st_dev.sort_values(by = 'Relative Standard deviation', axis =0, ascending = True)['Variable'].values
+metrics_df = pd.DataFrame(zip(C_list,acc_list, log_loss_list), columns = ['C', 'Accuracy', 'log_loss'])
 
-#                 #combining training and testing set 
-# X_tt = pd.concat([X_train, X_test], axis =0)# 0=union, 1 = join
-# y_tt = pd.concat([y_train, y_test], axis =0)   
 
-                #Using 90% of data 
-X_s = min_max_scaler(df_n4_90.drop('Pos', axis =1))
 
-                #Progressively dropping variables
-                
-columns = ['Variable combo', 'Accuracy']
-Acc_df  = pd.DataFrame(columns = columns)
+    #3A) Adjusting C to the one that maximises the CV accuracy of the train data
 
-for c,i in enumerate(best_variables):
+#(Result: best is C = 206.914 for mean accuracy (0.6915) and log_loss (0.7512) )
+#This result should be more generaliseable than the one calculated above 
+
+a = []
+b = []
+
+for C in C_list:
+    log_reg5 = LogisticRegression(max_iter = 5000, penalty = 'l2', C =C, solver = 'sag')
+    metrics1 = cross_validate(log_reg5, X_train, y_train.values.flatten(), cv = 5, scoring = ['accuracy', 'neg_log_loss'])
+    a.append(np.mean(metrics1['test_accuracy']))
+    b.append(-np.array(metrics1['test_neg_log_loss']).mean())
+
+metrics_df2 = pd.DataFrame(zip(C_list, a, b), columns = ['C', 'mean_accuracy', 'mean_log_loss'])
+
+
+    #4A) Adjusting C to the one that maximises the CV accuracy of the 90% data
+#Result: C =29.7635 ,accuracy = 0.689626
+a1 = []
+b1 = []
+
+for C in C_list:
+    log_reg6 = LogisticRegression(max_iter = 5000, penalty = 'l2', C =C, solver = 'sag')
+    metrics1 = cross_validate(log_reg6, X_s, y.values.flatten(), cv = 5, scoring = ['accuracy', 'neg_log_loss'])
+    a1.append(np.mean(metrics1['test_accuracy']))
+    b1.append(-np.array(metrics1['test_neg_log_loss']).mean())
+
+metrics_df3 = pd.DataFrame(zip(C_list, a1, b1), columns = ['C', 'mean_accuracy', 'mean_log_loss'])
+
+
+
+#Evaluating model 
+
+a = pd.read_csv('X_train_unscaled.csv')[X_train1.columns]
+b = pd.read_csv('X_test_unscaled.csv')[X_train1.columns]
+
+df_90 = pd.concat([a,b], axis =0)
+
+X_s = min_max_scaler(df_90)
+
+y = pd.concat([y_train, y_test], axis =0)
     
-            
-    knn2 = KNeighborsClassifier(n_neighbors = 5)
-    acc = cross_val_score(knn2, X_s, y, cv = 5, scoring = 'accuracy').mean()    
-    series = pd.Series([f'{list(X_s.columns)}', acc], index = columns)
-    Acc_df = Acc_df.append(series, ignore_index=True)
-    
-        
-    X_s = X_s.drop(i, axis = 1)
-    
-            # From analysis the least noise combo of features is: 
-                # ['3P', '3PA', '3P_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'PF']
-                # yeilding a mean cross_val accuracy of 0.6547
+# # Evaluating model for df_10 (using 3a results)
+# X_eval = df_10.drop('Pos', axis = 1)[X_train1.columns]
 
-    #2) Adjusting k
-#X_tt1 = pd.concat([X_train, X_test], axis =0)# 0=union, 1 = join
-X_s = min_max_scaler(df_n4_90.drop('Pos', axis =1))
+# X_eval = min_max_scaler(X_eval)
+# y_eval = df_10.Pos
 
-X_tt1 = X_s[['3P', '3PA', '3P_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'PF']]
+# log_reg_eval = LogisticRegression(max_iter = 5000, penalty = 'l2', C = 206.914, solver = 'sag')
+# log_reg_eval.fit(X_train, y_train.values.flatten()) 
 
-k_range = range(1, 40)
-mean_accuracy_scores3 = []
-for k in k_range:
-    knn3 = KNeighborsClassifier(n_neighbors = k)
-    mean_accuracy_score3 = cross_val_score(knn3, X_tt1, y, cv = 5, scoring = 'accuracy').mean()
-    mean_accuracy_scores3.append(mean_accuracy_score3)
+# y_pred_eval = log_reg_eval.predict(X_eval)
+# y_pred_test = log_reg_eval.predict(X_test)
 
-K_df = pd.DataFrame(zip(k_range, mean_accuracy_scores3 ), columns = ['K_value', 'Mean_Accuracy'])
 
-plt.figure()
-plt.plot(k_range, mean_accuracy_scores3)
-plt.xlim(5,40)
-plt.xticks(ticks = range(5, 40, 2))
+#       #Accuracy
+# ac_eval = accuracy_score(y_pred_eval, y_eval) # 0.653 accuracy
+# ac_test = accuracy_score(y_pred_test, y_test) # 0.656 accuracy
 
-            # From Analysis optimal k = 27 (yields a mean cross_val accuracy of 0.6811)
 
-    #3) Evaluating model 
-X_eval = df_n4_10.drop('Pos', axis = 1)[['3P', '3PA', '3P_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'PF']]
+# Evaluating model for df_10 (using 4a results)
+X_eval = df_10.drop('Pos', axis = 1)[X_train1.columns]
 
 X_eval = min_max_scaler(X_eval)
-y_eval = df_n4_10.Pos
+y_eval = df_10.Pos
+
+log_reg_eval1 = LogisticRegression(max_iter = 5000, penalty = 'l2', C =29.7635, solver = 'sag')
+log_reg_eval1.fit(X_s, y.values.flatten()) 
 
 
-knn_eval = KNeighborsClassifier(n_neighbors = 27)
-knn_eval.fit(X_tt1, y)
+y_pred_eval = log_reg_eval1.predict(X_eval)
 
 
-y_pred_eval = knn_eval.predict(X_eval)
+        #Accuracy
+ac_eval = accuracy_score(y_pred_eval, y_eval) # 0.649 accuracy
 
-        # Evaluate df_10 set:
-            #Accuracy
-ac = accuracy_score(y_pred_eval, y_eval) # 0.61 accuracy
             #classifcation report
 print(classification_report(y_eval, y_pred_eval))
             #confusion matrix 
@@ -267,16 +276,16 @@ cm2 = confusion_matrix(y_eval, y_pred_eval)
 
 
 plt.figure()
-plot_confusion_matrix(cm2, classes = knn.classes_, title='knn: Confusion matrix for evaluation data')
+plot_confusion_matrix(cm2, classes = log_reg_eval1.classes_, title='log_reg: Confusion matrix for evaluation data')
 
 
 
 ###################### Saving Model ###########################################
 
-#saving model 
-import pickle
+# #saving model 
+# import pickle
 
-with open('Optimal_KNN_model.sav','wb') as f:
-      pickle.dump(knn_eval,f)
+# with open('Optimal_log_reg_model.sav','wb') as f:
+#       pickle.dump(log_reg_eval1,f)
       
 ###############################################################################
