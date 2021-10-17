@@ -23,15 +23,15 @@ Eval1 = False # (not available for single player predictors)
 #== Alter the following variables with per-36 statistics ======================
 
 Three_attempts = 1.5 # three-point shots attempted per 36 minutes
-Three_per = 0.3 # proportion of three-poin shots made
+Three_per = 0.3 # proportion of three-point shots made
 Two_attempts = 10 # two-point shots attempted per 36mins
 Two_per = 0.5 # proportion of two-point shots made
 FTA = 7 # free throws attempted per 36 mins
 FT_per = 0.8  # proportion of free throws made per 36 mins
-ORB = 3 #offensive rebounds per 36 minutes 
-DRB = 0.5 #defensive rebounds per 36 minutes
-AST = 8 #total assists per 36 minutes
-STL = 1 #total steal per 36 minutes 
+ORB = 3 # offensive rebounds per 36 minutes 
+DRB = 0.5 # defensive rebounds per 36 minutes
+AST = 8 # total assists per 36 minutes
+STL = 1 # total steal per 36 minutes 
 BLK = 0.2 #total blocks per 36 minutes
 TOV = 1 # turnovers commited per 36 minutes 
 PF = 2 # personal fouls per 36 minutes 
@@ -39,14 +39,17 @@ PF = 2 # personal fouls per 36 minutes
 
 #==============================================================================
 
+#Variables derived from the above variables
 Threes = Three_attempts*Three_per # three-point shots made per 36mins
 Twos = Two_attempts*Two_per # two-point shots made per 36mins
 FGA = Three_attempts + Two_attempts  # number of field goals attempted per 36mins  
 FG_per = (Twos + Threes)/FGA # proportion of field goals made 
 TRB = ORB + DRB #total rebounds per 36 minutes
 
-FG, FT, PTS, eFG_per = 0,0,0,0 # not used by any models
-Pos = 'C' #just a placeholder postion 
+# Varibales not used by any models
+FG, FT, PTS, eFG_per = 0,0,0,0 # (we still need these so the df is complete )
+
+Pos = 'C' #just a placeholder postion (so the df is complete)
 
 L1 = [Pos, FG, FGA, FG_per, Threes, Three_attempts, Three_per, Twos, Two_attempts,
        Two_per, eFG_per, FT, FTA, FT_per, ORB, DRB, TRB, AST,
