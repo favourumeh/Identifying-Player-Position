@@ -10,16 +10,16 @@ import numpy as np
 
 #== Alter the following 5 variables with per-36 statistics ====================
 
-Threes = 0 #three pointers made per 36 minutes
-Three_attempts = 0.5 #three pointers attempted per 36 minutes
-Three_per = Threes/Three_attempts # proportion of three pointers made
-ORB = 3 #offensive rebounds per 36 minutes 
-DRB = 0.5 #defensive rebounds per 36 minutes
-TRB = 26 #total rebounds per 36 minutes
-AST = 2 #total assists per 36 minutes
-STL = 1 #total steal per 36 minutes 
-BLK = 0.2 #total blocks per 36 minutes
-PF = 2 # personal fouls per 36 minutes 
+# Threes = 0 #three pointers made per 36 minutes
+# Three_attempts = 0.5 #three pointers attempted per 36 minutes
+# Three_per = Threes/Three_attempts # proportion of three pointers made
+# ORB = 3 #offensive rebounds per 36 minutes 
+# DRB = 0.5 #defensive rebounds per 36 minutes
+# TRB = 26 #total rebounds per 36 minutes
+# AST = 2 #total assists per 36 minutes
+# STL = 1 #total steal per 36 minutes 
+# BLK = 0.2 #total blocks per 36 minutes
+# PF = 2 # personal fouls per 36 minutes 
 
 headings = ['3P', '3PA', '3P_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'PF']
 #==============================================================================
@@ -28,11 +28,11 @@ headings = ['3P', '3PA', '3P_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'PF
 
 
 # load model 
-with open('Optimal_KNN_model_distance.sav', 'rb') as pickle_file:
+with open('Optimal_KNN_model_train.sav', 'rb') as pickle_file:
      knn5 = pickle.load(pickle_file)
 
 #loading df of unscaled per 36mins stats (for 10% untrained data)
-df_unscaled = pd.read_csv('df_n4_10.csv')[headings]
+df_unscaled = pd.read_csv('df_10.csv')[headings]
 
 # coverting list of stats to dataframe of scaled stats  
 L = [Threes, Three_attempts, Three_per, ORB, DRB, TRB, AST, STL, BLK, PF]
