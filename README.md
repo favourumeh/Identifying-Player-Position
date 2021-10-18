@@ -28,21 +28,27 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
  ## Data Splitting 
  The data used for this report was split into three sets: **1) Training set(70%); 2) Testing set(20%) and 3) Evaluation set (10%)**. 
  
- The non-ensemble models were trained and optimised (i.e. using hyper parameter tuning or feature selection) using only the training set. As a result of this the non-ensemble models could be evaluated based on the testing and evaluations sets. 
+ The non-ensemble models were trained and optimised (i.e. using hyper parameter tuning or feature selection) using only the training set. As a result of this these models could be evaluated based on the testing and evaluations sets. 
  
   Making improvements to the ensemble model required the use of data different to the training set because KNN involves telling the model the correct prediction and the non-ensemble models used were already optimised for the training set. The testing set was, thus, used to 'train' the ensemble model (see ensemble section for more information). 
   
   All models were evaluated using the evaluation set as this data was totaly unseen by both sets of models. 
- 
+
  
   
  ## Feature Selection 
+ All features used for this project were appropriate for GNB modelling as they were continuous. For KNN and log_reg the features had to be scaled. This was done using a min-max scaler. 
+ 
+ As Log_reg is a regression model it had to follow certain assumptions such as: 1) No multicollinearity; 2) Exogeneity. Correlation plots and Variance Inflation Factor calculations were used to assess the multicolinearity ; could not use all the features 
+ 
+  ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Logistic%20Regression/final%20images/correlation_feature_selection.png)
+
  - feature scalling
  -K-Nearest Neighbours
  -Logistic Regression
  -Gaussian Naive Bayes 
  
- ## Hyperparameter tunning 
+ ## Tuning and Hyperparameter tunning 
   -K-Nearest Neighbours
  -Logistic Regression
  -Gaussian Naive Bayes 
