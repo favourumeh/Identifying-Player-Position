@@ -35,18 +35,72 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
   All models were evaluated using the evaluation set as this data was totaly unseen by both sets of models. 
 
  
-  
- ## Feature Selection 
- All features used for this project were appropriate for GNB modelling as they were continuous. For KNN and log_reg the features had to be scaled. This was done using a min-max scaler. 
- 
- As Log_reg is a regression model it had to follow certain assumptions such as: 1) No multicollinearity; 2) Exogeneity. Correlation plots and Variance Inflation Factor calculations were used to assess the multicolinearity ; could not use all the features 
- 
-  ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Logistic%20Regression/final%20images/correlation_feature_selection.png)
+  ## Feature Scalling
+  - Data inputed into KNN and Log_reg models were scaled using a min-max scaler:
+     - KNN modelling required feature scalling because it involved the calculation of (Euclidean) distances between data points 
+     - Log_reg required scalling to speed up convergence of solvers used to find maximum likelihood (e.g. 'Neton-cg')
+    
+  - Data inputted into the GNB model did not require feature scalling as this model works by determining the approximate gaussian distributions for each label for a given feature. 
 
- - feature scalling
- -K-Nearest Neighbours
- -Logistic Regression
- -Gaussian Naive Bayes 
+  - The training, testing and evaluation datasets were all scaled seperately using the same scalling procedure. This was done to avoid any passage of information between the different datasets. 
+   
+
+  
+ ## Feature Selection and Hyperparameter Tuning
+ 
+  - At the begining of this stage the features considered were as many as 22. Features: **'FG', 'FGA', 'FG_per', '3P', '3PA', '3P_per', '2P', '2PA', '2P_per',
+       'eFG_per', 'FT', 'FTA', 'FT_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL',
+       'BLK', 'TOV', 'PF', 'PTS'**
+  
+  - Feature selection for Gaussian Naive Bayes and K-Nearest Neighbours 
+      - As both of these models are sensitive to 'noisey' (irrelevant) features their tunning process required the detection and removal of any irrelevant features. 
+      - The goal of the features selection was to narrow down the 22 features to the ones that maximised the mean classifcation accuracy for a 5-fold cross validation of the training set. 
+  
+      - This was done in 2 steps:
+      
+         **1) Graphical Assessment: Equivalent Gausssian distribution** 
+         
+           - The mean and standard devition of a feature for a given label(i.e class/dependent variable) was calculated. 
+           - This was then used to plot an equivalent gaussian distribution to represent each label's feature distribution. Two examples of this type plot is shown below for the BLK and FT features : 
+             ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/KNN/final%20images/Spread%20of%20Labels%20for%20BLK%20and%20FT%20features.png)
+             
+           - From the image above it is evident that the distribution of the BLK feature for each label is more speread out than for the FT feature. This indicates that BLK is a better at predicting a player's position than FT. Additionally, it suggests that the GNB and KNN model will perfrom better without the FT feature becasue each model's prediction will become less confident due to the inability of FT to differentiate the labels. 
+           
+           - Graphical assessments are a good starting point in deciding which features were obviously redundant. The next step will quantify how much better the models are without each feature using Relative Standard Deviation (RSD). 
+      
+             **Note: The feature distribution for labels were not necessarily normal. The image above is a schemeatic to highligh the spread between the labels for a given feature.** 
+      
+         **2) Quantitative Assessment: Relative Standard Deviation(RSD)**
+         
+           - RSD was used as a measure of the relative spread of labels in a given feature. It is calculated by: 1) Calculating the mean of a given feature for each label; 2) Calculating the average spread of the label relative the the mean of all label means for a given feature. 
+           - Note: The 'average spread relative to the mean of all label means' was used  to capture the spread as opposed as a simple mean spread calculation becuase a larger set of numbers will naturally have higher spreads despite not actually being more spread out than a smaller set of numbers. 
+           - Once the RSD was calculated for all features, the features were ordered based on it. A slice of the features with top 3 highest RSD and lowest RSD are shown below
+           ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Naive%20Bayes/final%20images/Relative%20standard%20deviation%20rankings.png)
+           - To narrow down the most important features a 5-fold cross validation was conducted using the training set. All 22 features were inputted into a model(i.e. KNN or GNB) and then The mean(mean) accuracy of the model was then calculated. The process was repeated again and again.
+           
+           - With each new iteration the feature with the worst RSD (e.g. FT for the 1st iteration) was removed and the model's accuracy was recalculated. This done until the model was left with one feature
+           - In the end the combination of features that produced the highest (mean) cross validation accuracy was used deemed the most relevant. An example of the top 4 varibale combos with the highest accuracy and bottom 6 combos for KNN with number or neighbour = 5 is shown below 
+           ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/KNN/final%20images/KNN%20variable%20combo%20accuracy%20feature%20selection.png)
+           
+- 
+       
+
+ 
+ 
+  -Logistic Regression
+ As Log_reg is a regression model it had to follow certain assumptions such as: 1) No multicollinearity; 2) Exogeneity. Correlation plots and Variance Inflation Factor calculations were used to assess the multicolinearity. Variables with correlation coefficients >0.7 and VIF> 5 were removed.
+ 
+ **Correlation Plot**
+  ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Logistic%20Regression/final%20images/correlation_feature_selection.png)
+  
+  **VIF**
+  
+  ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Logistic%20Regression/final%20images/VIF.png)
+  
+  
+
+
+
  
  ## Tuning and Hyperparameter tunning 
   -K-Nearest Neighbours
