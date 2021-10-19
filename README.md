@@ -46,7 +46,7 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
    
 
   
- ## Feature Selection and Hyperparameter Tuning
+ ## Feature Selection 
  
   - At the begining of this stage the features considered were as many as 22. Features: **'FG', 'FGA', 'FG_per', '3P', '3PA', '3P_per', '2P', '2PA', '2P_per',
        'eFG_per', 'FT', 'FTA', 'FT_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL',
@@ -81,14 +81,11 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
            - With each new iteration the feature with the worst RSD (e.g. FT for the 1st iteration) was removed and the model's accuracy was recalculated. This done until the model was left with one feature
            - In the end the combination of features that produced the highest (mean) cross validation accuracy was used deemed the most relevant. An example of the top 4 varibale combos with the highest accuracy and bottom 6 combos for KNN with number or neighbour = 5 is shown below 
            ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/KNN/final%20images/KNN%20variable%20combo%20accuracy%20feature%20selection.png)
-           
-- 
-       
-
+                 
  
- 
-  -Logistic Regression
- As Log_reg is a regression model it had to follow certain assumptions such as: 1) No multicollinearity; 2) Exogeneity. Correlation plots and Variance Inflation Factor calculations were used to assess the multicolinearity. Variables with correlation coefficients >0.7 and VIF> 5 were removed.
+  - Feature Selection for Logistic Regression
+  
+ As Log_reg is a regression model it had to follow certain assumptions such as: 1) No multicollinearity; 2) Exogeneity. Correlation plots and Variance Inflation Factor calculations were used to assess the multicolinearity. Variables with correlation coefficients >0.7 and VIF> 5 were removed. Exogeneity was upheld 
  
  **Correlation Plot**
   ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Logistic%20Regression/final%20images/correlation_feature_selection.png)
@@ -97,15 +94,23 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
   
   ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Logistic%20Regression/final%20images/VIF.png)
   
-  
+ ## Tuning and Hyperparameter Tuning
+   ### Gaussian Naive Bayes 
+   
+ Due to the simplicity of this model the only tuning conducted was the removal of 'noisy' data which has already been explained in the Feature Selection section.  
 
-
-
+   ### K-Nearest Neighbours
+   
+ As well as the removal of 'noisy' data, this model was tuned by adjusting the number of neighbours (k-value) and changing the weight function used to in the prediction from 'uniform' to 'distance'. 
  
- ## Tuning and Hyperparameter tunning 
-  -K-Nearest Neighbours
- -Logistic Regression
- -Gaussian Naive Bayes 
+ A uniform weight function simply choses the modal label(/class) from the k neighbours. The distance wieght function chosen for this model places more emphases (weight) on labels that are closer to the queried point by setting the weight as the inverse (Euclidean) distance between the query point and the neighbours. 
+
+To gauge the effect of adjusting the K-value and weight function a 5-fold cross validation was conducted on the training data and the mean (mean) accuracy of all 5 models was calculated. The figure below shows the effect of the weight function used and k-value on the mean (mean) accuracy. 
+
+![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/KNN/final%20images/tuning_k.png)
+
+   ### Logistic Regression
+   
  
  ## Evaluating KNN, log_reg and GNB
  
