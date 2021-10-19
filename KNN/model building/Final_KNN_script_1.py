@@ -209,7 +209,15 @@ plt.ylabel('Mean_Accuracy')
 plt.xlim(5,40)
 plt.xticks(ticks = range(5, 40, 2))
 
-            # From Analysis optimal k = 24 (yields a mean cross_val accuracy of 0.694028)
+# plt.figure() #K_df1 should have mean accuracy where models were weight = uniform and weight = distance
+# sns.lineplot(x = 'K_value', y = 'Mean_Accuracy_distance', data = K_df1, label = 'weight = distance')
+# sns.lineplot(x = 'K_value', y = 'Mean_Accuracy_uniform', data = K_df1,label = 'weight = uniform')
+# plt.legend()
+# plt.ylabel('Cross Validation Mean Accuracy')
+# plt.xlim(5,40)
+# plt.xticks(ticks = range(5, 40, 2))      
+
+      # From Analysis optimal k = 24 (yields a mean cross_val accuracy of 0.694028)
 
 ########################## Evaluating model #################################### 
 
