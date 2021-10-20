@@ -11,17 +11,16 @@ import pandas as pd
 model = 'E_hv_flex' # (options: 'KNN', 'GNB', 'log_reg', 'E_hv1', 'E_hv2' or 'E_hv_flex') 
 
 # Predicting one player or multiple players? 
-multiple = False #(options: True or False)
+multiple = True #(options: True or False)
 
 # Look at accuracy, classifcation report and confusion matrix
-Eval1 = False # (not available for single player predictors)
+Eval1 = True # (not available for single player predictors)
 
 
 
 ################# Predicting the position of a single player #####################
 
 #== Alter the following variables with per-36 statistics ======================
-
 Three_attempts = 1.5 # three-point shots attempted per 36 minutes
 Three_per = 0.3 # proportion of three-point shots made
 Two_attempts = 10 # two-point shots attempted per 36mins
@@ -35,8 +34,6 @@ STL = 1 # total steal per 36 minutes
 BLK = 0.2 #total blocks per 36 minutes
 TOV = 1 # turnovers commited per 36 minutes 
 PF = 2 # personal fouls per 36 minutes 
-
-
 #==============================================================================
 
 #Variables derived from the above variables
