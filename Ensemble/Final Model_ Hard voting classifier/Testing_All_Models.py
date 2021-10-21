@@ -8,13 +8,13 @@ from Ensemble_Hard_Voting_function import model_function
 import pandas as pd
 
 # Chose a model 
-model = 'E_hv_flex' # (options: 'KNN', 'GNB', 'log_reg', 'E_hv1', 'E_hv2' or 'E_hv_flex') 
+model = 'KNN' # (options: 'KNN', 'GNB', 'log_reg', 'E_hv1', 'E_hv2' or 'E_hv_flex') 
 
 # Predicting one player or multiple players? 
-multiple = True #(options: True or False)
+multiple = False #(options: True or False)
 
 # Look at accuracy, classifcation report and confusion matrix
-Eval1 = True # (Eval1 == True is not approrpiate for single player predictors)
+Eval1 = False # (Eval1 == True is not approrpiate for single player predictors)
 
 
 
@@ -86,4 +86,10 @@ if multiple == True:
     y_pred = model_function (multiple, model, data= f, L =L1, Eval = Eval1) # the y_predicted by the model 
 else:
     y_pred = model_function(multiple, model, L =L1, Eval = Eval1)[-1] # the y_predicted by the model 
-    print(f'This player is probably a {y_pred}')
+    if 'E_hv' in model:
+        print(f'''This player is probably a {y_pred} because 
+              KNN_pred = {model_function(multiple, "KNN", L =L1, Eval = Eval1)[-1]}, 
+              log_reg_pred = {model_function(multiple, "log_reg", L =L1, Eval = Eval1)[-1]} 
+              GNB_pred = {model_function(multiple, "GNB", L =L1, Eval = Eval1)[-1]}''')
+    else:
+        print(f'This player is probably a {y_pred}')
