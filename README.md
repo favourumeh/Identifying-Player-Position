@@ -1,31 +1,45 @@
 # Identifying-Player-Position
  
 
-## Project overview 
+## Section 1: Project overview 
  - Created a tool than enables an NBA scout to identify an NBA player's position based on their per 36minutes statitics using 6 classifcation models. 
  - Data for this project was taken from basketballreference.com using the scraper developed from an earlier [Data Pipeline](https://github.com/favourumeh/DATA-PIPELINE) project 
  - This project uses three different classifcation algorithms: Naive Bayes, Logistic Regression and K Nearest Neighbours
  - In total six models were created:
     - three models used the individual algorithms mentioned above. They are called: 'KNN', 'log_reg' and 'GNB'
     - three more models were created using using an ensemble appraoch. These ensemble models use hard voting with some minor tweaks based on anlysisis conducted on confusion matrix. They are called: 'E_hv1', 'E_hv2' and 'E_hv_flex' 
- -  All model were evaluated by comparing each other agianst three classifcation metrics : precision, recall and mean accuracy. Their confusion matrices were also analysed to gauge how well each model performed for different labels (/classes). 
- -  This is a summary of the findings for each model:
-                                               
-                                               [INSERT TABLE]
-                                              
- -  Feel free to try out the tool created by cloning the repository and opening the file: 'Testing_All_Models.py'. Follow the flowchart below for further guidance.  
+ -  All model were evaluated by comparing each other agianst three classifcation metrics : precision, recall and accuracy. Their confusion matrices were also analysed to gauge how well each model performed for different labels (/classes). 
+ -  This is a summary of the performace for each model:                                       
+    ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main//Evaluation%20images/Accuracy%2C%20Precision%2C%20Recall%20for%20all%20models%20for%20evaluation%20data.png)                                 
+ -  Feel free to try out the tool created by cloning the repository and opening the file: 'Testing_All_Models.py'. Follow the flowchart in the **Section 12** of this README for further guidance.  
  
- ## Python version and packages 
+ ## Section 2: Python version and packages 
 Python Version: **3.8.3**
 
 Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
 
 
- ## Project context
- Before diving into the project details it is important to understand some project context. **See file: 'Data_explained.docx'** for greater context of the tabular data 
+ ## Section 3: Project context
+
+ Before diving into the project details it is important to understand the independent variables (features) and the dependent variable (classes/ lables). 
+ 
+ ### Dependent variable 
+ - The dependent variable is player position (or 'Pos')
+ - It is made up of 5 classes: 
+    - 'C' = Centre
+    - 'PF' = Power Forward
+    - 'PG' = Point Guard
+    - 'SF' = Small Forward
+    - 'SG' = Shooting Guard
+ 
+ ### Independent Varibales 
+ - The independent variables are per 36 minutes player statistics. 
+ - The ones considered for this project are
+ ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/images%20dump/feature%20definitions.png)
+ - Go to the file **'Features_Explained.docx'** for further information behind these features. 
  
  
- ## Data Splitting 
+ ## Section 4: Data Splitting 
  The data used for this report was split into three sets: **1) Training set(70%); 2) Testing set(20%) and 3) Evaluation set (10%)**. 
  
  The non-ensemble models were trained and optimised (i.e. using hyper parameter tuning or feature selection) using only the training set. As a result of this these models could be evaluated based on the testing and evaluations sets. 
@@ -35,7 +49,7 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
   All models were evaluated using the evaluation set as this data was totaly unseen by both sets of models. 
 
  
-  ## Feature Scalling
+  ## Section 5: Feature Scalling
   - Data inputed into KNN and Log_reg models were scaled using a min-max scaler:
      - KNN modelling required feature scalling because it involved the calculation of (Euclidean) distances between data points 
      - Log_reg required scalling to speed up convergence of solvers used to find maximum likelihood (e.g. 'Neton-cg')
@@ -46,7 +60,7 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
    
 
   
- ## Feature Selection 
+ ## Section 6: Feature Selection 
  
   - At the begining of this stage the features considered were as many as 22. Features: **'FG', 'FGA', 'FG_per', '3P', '3PA', '3P_per', '2P', '2PA', '2P_per',
        'eFG_per', 'FT', 'FTA', 'FT_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL',
@@ -55,7 +69,7 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
   ### Feature selection for Gaussian Naive Bayes and K-Nearest Neighbours 
   
    - As both of these models are sensitive to 'noisey' (irrelevant) features their tunning process required the detection and removal of any irrelevant features. 
-   - The goal of the features selection was to narrow down the 22 features to the ones that maximised the mean classifcation accuracy for a 5-fold cross validation of the training set. Accuracy was used as the judgement metric because the labels (/classes) -- whilst not equal-- were fairly balanced. 
+   - The goal of the features selection was to narrow down the 22 features to the ones that maximised the classifcation accuracy for a 5-fold cross validation of the training set. Accuracy was used as the judgement metric because the labels (/classes) -- whilst not equal-- were fairly balanced. 
 
        - This was done in 2 steps:
       
@@ -91,7 +105,7 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
  **Correlation Plot**
   ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Logistic%20Regression/final%20images/correlation_feature_selection.png)
     
- ## Tuning and Hyperparameter Tuning
+ ## Section 7: Tuning and Hyperparameter Tuning
  
    ### Gaussian Naive Bayes 
    
@@ -103,7 +117,7 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
  
  A uniform weight function simply choses the modal label(/class) from the k neighbours. The distance wieght function chosen for this model places more emphases (weight) on labels that are closer to the queried point by setting the weight as the inverse (Euclidean) distance between the query point and the neighbours. 
 
-To gauge the effect of adjusting the K-value and weight function a 5-fold cross validation was conducted on the training data and the mean (mean) accuracy of the 5 models was calculated. The figure below shows the effect of the weight function used and k-value on the mean (mean) accuracy. 
+To gauge the effect of adjusting the K-value and weight function a 5-fold cross validation was conducted on the training data and the mean accuracy of the 5 models was calculated. The figure below shows the effect of the weight function used and k-value on the mean  accuracy. 
 
 ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/KNN/final%20images/tuning_k.png)
 
@@ -111,19 +125,19 @@ From the figure above it is evident that a K-value = 24 and the distance weight 
 
    ### Logistic Regression
    
- SKLearn's Logistic Regression model has built-in ridge and lasso regularisation. It also offers different solvers that determine the maximum likelhood. To save on time GridsearchCV was used to try different combinations of solvers, types of regularisation(ridge and lasso) and inverse regularisation strenghts. Twenty inverse regularisation strength values were uniformly distributed in logspace from 10^-4 to 10^4. The mean (mean)accuracy and mean log loss of a 5-fold cross-validation of the training set was used to gauge the optimal combination. 
+ SKLearn's Logistic Regression model has built-in ridge and lasso regularisation. It also offers different solvers that determine the maximum likelhood. To save on time GridsearchCV was used to try different combinations of solvers, types of regularisation(ridge and lasso) and inverse regularisation strenghts. Twenty inverse regularisation strength values were uniformly distributed in logspace from 10^-4 to 10^4. The mean accuracy and mean log loss of a 5-fold cross-validation of the training set was used to gauge the optimal combination. 
  
 The optimal combination used the 'sag' solver, with ridge regularisation and an inverse regularisation strength of 206.913. The mean cross validation accuracy for this combination was 0.6991 and the log loss was 0.7512. 
  
- ## Evaluating KNN, log_reg and GNB
+ ## Section 8: Evaluating KNN, log_reg and GNB
  As the **test data** was not used in the training or tuning of these models. It was used to compare the performance against Accuracy, Precision and Recall 
  
  ### Broad Analysis on Accuracy, Precision and Recall 
   - The table below give the mean accuracy and weighted Precision and Recall for each model  
-![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Accuracy%2C%20Weighted%20precison%20and%20recall%20for%20non-ensemble%20models.png)
+![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Evaluation%20images/Accuracy%2C%20Weighted%20precison%20and%20recall%20for%20non-ensemble%20models.png)
 
  - This table below gives the Precision and Recall for each label in each and for each model
-![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Accuracy%20and%20Precision%20KNN%2C%20Log_reg%2C%20GNB.png)
+![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Evaluation%20images/Accuracy%20and%20Precision%20KNN%2C%20Log_reg%2C%20GNB.png)
    
 - Brief Comments:
   - From the tables above its is evident that the log_reg model performs the best overall in terms of precision, accuracy and recall. It ranks in the top 2 for precision and recall for all labels and has the highest overall accuracy, weighted precsion and weighted recall.
@@ -133,22 +147,22 @@ The optimal combination used the 'sag' solver, with ridge regularisation and an 
  
  ### Confusion Matrix Analysis
  The figure below is the confusion matrices for all models: 
- ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Confusion%20matrices%20for%20all%20non-ensemble%20models%20for%20testing%20data.png)
+ ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Evaluation%20images/Confusion%20matrices%20for%20all%20non-ensemble%20models%20for%20testing%20data.png)
  
  Brief Comments:
  - The reason why KNN and Log_reg predict the PF label so poorly is because it is confused for the SF label. 
- - GNB isn't as poor a predictor of the PF label as KNN and Log_reg, but PF is noticeably underpredicted. This undeprediction is caused by overprediction of the C and SF labels which has caused dismal PF precision (0.36). More PFs are classed as Cs by the GNB model than as PFs. 
- - SF accuracy was dismal across all models. Both KNN and log_reg label more SFs as PFs than SFs. Despite having the highest SF recall out of all models more SFs are labelled as SGs and PFs than SFs. 
+ - GNB isn't as poor a predictor of the PF label as KNN and Log_reg, but PF is noticeably underpredicted. This undeprediction is caused by overprediction of the C and SF labels which has caused dismal PF recall (0.36). More PFs are classed as Cs by the GNB model than as PFs. 
+ - SF recall was dismal across all models. Both KNN and log_reg label more SFs as PFs than SFs. Despite having the highest SF recall out of all models more SFs are labelled as SGs and PFs than SFs. 
  
  ### Contextual observation and Final comments:
  Whilst not having amazing classification accuracy the models may have picked up on the fluidity of certain positions in basketball particularly SF and PF. It is this fluidity in positional play that caused lower recall scores for these positions. Addtionally, a player's positional classifcation is not based on any objective metric rather a concensus amongst the player and their observers (coaches, scouts, audience etc). This concensus is typically based on who the player's positional play most resembles historically. However, not every player will fit into particular box. It is possible for a player's positional play to be different to their identification and the models may capture this.
  
- The following section will outline the creation of ensemble models which will establish different voting systems which will enable the models to come to an agreement on a player's position.  
+ The following section will outline the creation of ensemble models which will establish different hard voting systems which will enable the models to come to an agreement on a player's position.  
  
  
  
- ## Ensemble Model Building 
- As there was an odd number of algorithms used for this project ensemble models (E_hv1, E_hv2 and  E_hv_flex) were produced using the non-ensemble models (KNN, log_reg and GNB) optimised for the training set. This was done to create a centralised tool that inherits the best traits the individual models. 
+ ## Section 9: Ensemble Model Building 
+ As there was an odd number of algorithms used for this project ensemble models (E_hv1, E_hv2 and  E_hv_flex) were produced using the non-ensemble models (KNN, log_reg and GNB) optimised for the training set. This was done with the belief that ensemble models would help generalise class prediction by that inherits the best traits the individual models. 
  
  All the ensemble models use hard voting classification and were fed the test data. For this situation there were 3 possible voting senarios:
  
@@ -172,12 +186,14 @@ The E_hv1 model was used as baseline ensemble model whilst E_hv2 and E_hv_flex m
  This model accepts the concensus and majority votes from scenrio 1 and 2. For scenrario 3 the model randomly choses a non-ensemble model to decide. 
  
  **Advantage:** This voting system is fair 
+ 
  **Disadvantage:** The results are not repeatable or reproducible due to the random selection process for Scenrario 3. 
  
  ### E_hv2
  This model accepts the concensus and majority votes from scenrio 1 and 2. For scenrario 3 the non-ensemble model with the highest accuracy in this scenario for the testing set was chosen. The most accurate model for scenrio 3 was log_reg at 45%. 
   
  **Advantage:** This voting system will yield have a higher accuracy than E_hv1
+ 
  **Disadvantage:** This model is biased towards the optimised log_reg model for scenrio 3. 
  
  ### E_hv_flex
@@ -186,42 +202,50 @@ The E_hv1 model was used as baseline ensemble model whilst E_hv2 and E_hv_flex m
  It was found that in this scenario GNB's SF prediction had a precision of 49.8% whilst the PF prediction by KNN and log_reg had a precision of 34.2%. In doing this the model inherits GNB's superior recall for the SF label, but this comes with a trade-off as the model's PF recall reduces (see next section for visual aid of this trade-off). Nevertheless, this makes for a more balanced recall for all labels 
 
 **Advantage:** This voting system will yield have a higher accuracy than E_hv2
- **Disadvantage:** This model is biased towards the optimised log_reg model for scenrio 3. It is also biased towards the optimised GNB model for scenario 2 (where KNN and log_reg predict the PF label whilst GNB Predicts the SF). 
+ 
+**Disadvantage:** This model is biased towards the optimised log_reg model for scenrio 3. It is also biased towards the optimised GNB model for scenario 2 (where KNN and log_reg predict the PF label whilst GNB Predicts the SF). 
  
  
- ## Evaluating KNN, log_reg and GNB, E_hv1, E_hv2, E_hv_flex
+ ## Section 10: Evaluating KNN, log_reg and GNB, E_hv1, E_hv2, E_hv_flex
  To evaluate all 6 models produced the evaluation set was used as this data is unseen by all the models.  overall accuracy, precision and recall and the. 
  
- ### Analysis on Accuracy, Precision and Recall 
- ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Accuracy%2C%20Precision%2C%20Recall%20for%20all%20models%20for%20evaluation%20data.png)
- 
-   - As expected E_hv_flex appears to have to best overall precision, recall and accuracy. However, it is still just 2% better off the best overall non-ensemble model, log_reg. 
-   - All non-ensemble models have low variance because the precision and recall 
-   - 
-     
+ ### Accuracy, Precision and Recall 
+ ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Evaluation%20images/Accuracy%2C%20Precision%2C%20Recall%20for%20all%20models%20for%20evaluation%20data.png)
+    
       
-      
-      
-      
-      
-      
-      
-      
-      
- ### Analysis on confusion matrices
- 
+ ### Confusion Matrices
  
  #### 1) Non-Ensemble Models
- ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Confusion%20matrices%20for%20all%20non-ensemble%20models%20for%20evaluation%20data.png)
+ ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Evaluation%20images/Confusion%20matrices%20for%20all%20non-ensemble%20models%20for%20evaluation%20data.png)
 
  #### 2) Ensemble Models
- ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Confusion%20matrices%20for%20all%20ensemble%20models%20for%20evaluation%20data.png)
+ ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Evaluation%20images/Confusion%20matrices%20for%20all%20ensemble%20models%20for%20evaluation%20data.png)
+
+### Evaluation 
+
+All non-ensemble models have low variance because the precision and recall scores are similar to those from the test dataset. Based on these findings, it can be assumed that the ensemble models will also have low variance.  
+
+As expected E_hv_flex appears to have to best overall precision, recall and accuracy. However, it is still just 2% better off the best overall non-ensemble model, log_reg. Addtionally, the confusion matrix for E_hv_flex and E_hv2 shows that E_hv_flex has improved SF recall at the cost of PF recall. 
+
+There appears to be a limit to the precision, recall and accuracy that can be achieved by the current models. This limit may be caused by the features used in each of the optimised non-ensemble models. The current features could make it difficult for the non-ensemble models to differentiate the PF, SF and C classes. The purpose behind creating the ensemble models was the belief that they would inherit the good traits of the non-ensemble model, and this is evident in high precision and recall of the C and PG classes; but also evident are the poor distinction of the PF, SF and c classes. 
+
+To improve the precision and recall of the models a stronger feature engineering is required. The addition of new features that show clear separation of the classes should imporve the precision and recall for all classes much more that further tunning or ensemble model tweaks. 
+
+ ## Section 11: Further work 
+The below sub-sections are suggestions for improvements that could be made to improve precision and recall for all classes.
+
+### Improving precision and recall 
+ 
+This can be done by adding features which help to better distinguish the classes such a 'player height' or 'AST/TOV' ('Assist/Turnover'). Another possible feature is a score that takes into account the 'C' class was disproportionately affected by nulls in the '3P_per' feature. Roughly 33% of the C label had a null value for this feature compared to 15% for PF, 2.3% for SF, 0.7% for PG and 0.6% for SG. 
+ 
+ ### Improve ensemble approach 
+ A soft voting classifier may also prove better than a hard votting classifier for situations where the non-ensemble models have high uncertaintly in a classification. 
+ 
+## Section 12: How to use the tool developed 
+The tool developed allows the user to use all models created in this project (ensemble and non-ensemble) to predict the position one or more players. The variable 'y_pred' should give the prediction(s) made. When Identifying a single player the prediction will also be printed in the console. When identifying more than one player the predictioons will not be in the console instead there will be a classification report and confusion matrix. 
+
+Follow the flow chart below to use the tool which is in the file 'Testing_All_Models.py' in the folder [Final Model_ Hard voting classifier](https://github.com/favourumeh/Identifying-Player-Position/tree/main/Ensemble/Final%20Model_%20Hard%20voting%20classifier). 
+
+![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Ensemble/Final%20Model_%20Hard%20voting%20classifier/How%20to%20use%20the%20tool.png)
 
 
- ## Further work 
- -improving accuracy
- 
- Undergoing further model tunning or utilising different algorithms (e.g. Random Forest) may offer some further improvement the classifcation accuracy, but for noticeable  improvement stronger feature engineering is requrired. This can be done by  adding features which help to better distinguish the classes such a 'player height' or 'AST/TOV' ('Assist/Turnover'). Another possible feature is a 'three point score' as when processing the null values it was found that the 'C' class was disproportionately affected by nulls in the '3P_per' feature. Roughly 33% of the C label had a null value for this feature compared to 15% for PF, 2.3% for SF, 0.7% for PG and 0.6% for SG. From the confusion matrices it is evident that that all models had trouble differentiating PFs from Cs and SFs thus the 'three point score' should imporve this.  
- 
- -soft voting classifer 
-## How to use the tool developed 
