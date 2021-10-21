@@ -108,7 +108,15 @@ Packages: pandas, numpy, sklearn, matplotlib, seaborn, pickle
  **Correlation Plot**
   ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main/Logistic%20Regression/final%20images/correlation_feature_selection.png)
 
-    
+  ### Feeatures used by each Model
+  After the feature selection process these are the features used by each model:
+  
+  **KNN**: '3P', '3PA', '3P_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'PF'
+  
+  **log_reg**: 'FG_per', '3PA', '3P_per', '2PA', '2P_per', 'FTA', 'FT_per', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF'
+  
+  **GNB**: 'FGA', 'FG_per', '3P', '3PA', '3P_per', '2P', '2PA', '2P_per', 'FTA', 'FT_per', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF'
+  
  ## Section 7: Tuning and Hyperparameter Tuning
  
    ### Gaussian Naive Bayes 
