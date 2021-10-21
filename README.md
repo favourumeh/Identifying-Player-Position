@@ -1,5 +1,5 @@
 # Identifying-Player-Position
- 
+  -  Feel free to try out the tool created by cloning the repository and opening the file: 'Testing_All_Models.py'. Follow the flowchart in the **Section 12** of this README for further guidance.  
 
 ## Section 1: Project overview 
  - Created a tool that enables an NBA scout to identify an NBA player's position based on their per 36minutes statistics using 6 classification models. 
@@ -11,7 +11,7 @@
  -  All models were evaluated by comparing each other against three classification metrics : precision, recall and accuracy. Their confusion matrices were also analysed to gauge how well each model performed for different labels (/classes). 
  -  This is a summary of the performance for each model:                                       
     ![](https://github.com/favourumeh/Identifying-Player-Position/blob/main//Evaluation%20images/Accuracy%2C%20Precision%2C%20Recall%20for%20all%20models%20for%20evaluation%20data.png)                                 
- -  Feel free to try out the tool created by cloning the repository and opening the file: 'Testing_All_Models.py'. Follow the flowchart in the **Section 12** of this README for further guidance.  
+
 
  
  ## Section 2: Python version and packages 
