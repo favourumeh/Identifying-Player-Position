@@ -14,7 +14,7 @@ model = 'E_hv_flex' # (options: 'KNN', 'GNB', 'log_reg', 'E_hv1', 'E_hv2' or 'E_
 multiple = True #(options: True or False)
 
 # Look at accuracy, classifcation report and confusion matrix
-Eval1 = True # (not available for single player predictors)
+Eval1 = True # (Eval1 == True is not approrpiate for single player predictors)
 
 
 
